@@ -8,7 +8,7 @@
   <body>
     <h1>Superhero API Table</h1>
     <label for="page-size-select">Page size:</label>
-    <select id="page-size-select" onchange="updatePageSizes()">
+    <select id="page-size-select" onchange="changePageSize(this.value)">
       <option value="10">10</option>
       <option value="20" selected>20</option>
       <option value="50">50</option>
@@ -30,6 +30,6 @@
       <tbody>
       </tbody>
     </table>
-    <script src="sortble.js"></script>
+    <script src="sortable.js"></script>
   </body>
 </html>
