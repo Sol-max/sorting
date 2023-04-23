@@ -12,6 +12,18 @@ const searchInput = document.getElementById('search-input');
 const pageSizeSelect = document.getElementById('page-size');
 const pageSelect = document.getElementById('page-select');
 const tableBody = document.getElementsByTagName('tbody')[0];
+const nameHeader = document.getElementById('name-header');
+
+nameHeader.addEventListener('click', () => {
+  if (sortColumn === 'name') {
+    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortColumn = 'name';
+    sortDirection = 'asc';
+  }
+
+  renderTable(data, currentPage, pageSize, sortColumn, sortDirection);
+});
 
 // Functions
 const superheroTable = document.getElementById("superhero-table");
@@ -37,17 +49,26 @@ fetch("https://rawcdn.githack.com/akabab/superhero-api/0.2.0/api/all.json")
       powerCell.innerHTML = superhero.powerstats.power;
       combatCell.innerHTML = superhero.powerstats.combat;
     });
+    data = data.map(hero => ({
+      ...hero,
+      icon: hero.images.sm,
+    }));
+    renderTable(data, currentPage, pageSize, sortColumn, sortDirection);
   });
 
+pageSizeSelect.addEventListener('change', (event) => {
+  pageSize = parseInt(event.target.value);
+  renderTable(data, currentPage, pageSize, sortColumn, sortDirection);
+});
 
 const handleSearch = () => {
   const searchQuery = searchInput.value.trim().toLowerCase();
   const filteredData = data.filter(hero => {
     const nameMatch = hero.name.toLowerCase().includes(searchQuery);
-    const fullNameMatch = hero.fullName.toLowerCase().includes(searchQuery);
+    const fullNameMatch = hero.biography.fullName.toLowerCase().includes(searchQuery);
     return nameMatch || fullNameMatch;
   });
-  renderTable(filteredData);
+  renderTable(filteredData, currentPage, pageSize, sortColumn, sortDirection);
 };
 
 // Sorts the provided data array by the column with the given columnIndex 
@@ -73,6 +94,7 @@ const sortData = (data, columnIndex, sortOrder) => {
 
   return sortedData;
 };
+
 
 // Renders the table using the provided data, currentPage, and pageSize values
 const renderTable = (data, currentPage, pageSize, sortColumn, sortDirection) => {
@@ -146,3 +168,10 @@ const getColumnValue = (rowData, columnIndex) => {
   const key = keys[columnIndex];
   return rowData[key];
 };
+function updatePageSizes() {
+  let select = document.getElementById("page-size-select");
+  let selectedValue = select.value;
+  pageSize = parseInt(selectedValue);
+  currentPage = 1; // reset current page to 1 when page size is changed
+  updateTable();
+}
